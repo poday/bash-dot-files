@@ -24,7 +24,7 @@ export LESS="--RAW-CONTROL-CHARS"
 [[ -f $SCRIPTDIR/less-termcap.bash ]] && . $SCRIPTDIR/less-termcap.bash
 
 # bash completion for git
-[[ -f $SCRIPTDIR/git-completion.bash  ]] && source $SCRIPTDIR/git-completion.bash 
+[[ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ]] && . $(brew --prefix)/etc/bash_completion.d/git-completion.bash
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" $HOME/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
