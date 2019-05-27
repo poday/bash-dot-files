@@ -17,6 +17,11 @@ YELLOW="\[\033[33m\]"
 
 RESTORE="\[\033[0m\]" #0m restores to the terminal's default colour
 
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
+}
+
+
 if [ -z $SCHROOT_CHROOT_NAME ]; then
     SCHROOT_CHROOT_NAME=" "
 fi;
@@ -48,4 +53,21 @@ fi;
 #echo "${GREEN}\u@\h${SCHROOT_CHROOT_NAME}${BLUE}\w \
 #${CYAN}${BRANCH}${RED}${ERRMSG} \$ $RESTORE"
 
-echo "${ERRMSG}${USERSTYLE}\u${WHITE}@${HOSTSTYLE}\h${WHITE}@${CYAN}\t${WHITE}@${YELLOW}\w${WHITE}\$ $RESTORE"
+ENVSTR=""
+
+#small hack, normally the shell level is 1 at the prompt but we'll be 2 inside this script,
+#we delay the interpolation of SHLVL to ensure that it displays correctly
+if [[ ${SHLVL} != 2 ]]; then
+    ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}\${SHLVL}${WHITE})"
+fi;
+
+GITBRANCH=$(parse_git_branch)
+if [[ "${GITBRANCH}" != "" ]]; then
+    ENVSTR="${ENVSTR}${WHITE}GIT(${LIGHT_GREEN}${GITBRANCH}${WHITE})"
+fi;
+
+if [[ "${ENVSTR}" != "" ]]; then
+    ENVSTR="${ENVSTR}\n"
+fi;
+
+echo "\n${ENVSTR}${ERRMSG}${USERSTYLE}\u${WHITE}@${HOSTSTYLE}\h${WHITE}@${CYAN}\t${WHITE}@${YELLOW}\w\n${WHITE}\$ $RESTORE"

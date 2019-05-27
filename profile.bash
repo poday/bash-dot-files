@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+#set -x
 
 # Add `~/bin` to the `$PATH`
 export PATH="$HOME/bin:$PATH";
