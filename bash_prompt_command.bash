@@ -66,8 +66,13 @@ if [[ "${GITBRANCH}" != "" ]]; then
     ENVSTR="${ENVSTR}${WHITE}GIT(${LIGHT_GREEN}${GITBRANCH}${WHITE})"
 fi;
 
+if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
+    ENVSTR="${ENVSTR}${WHITE}(${ORANGE}PIPENV${WHITE})"
+fi;
+
 if [[ "${ENVSTR}" != "" ]]; then
     ENVSTR="${ENVSTR}\n"
 fi;
+
 
 echo "\n${ENVSTR}${ERRMSG}${USERSTYLE}\u${WHITE}@${HOSTSTYLE}\h${WHITE}@${CYAN}\t${WHITE}@${YELLOW}\w\n${WHITE}\$ $RESTORE"
