@@ -20,6 +20,40 @@ RESTORE="\[\033[0m\]" #0m restores to the terminal's default colour
 parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
 }
+parse_git_remote() {
+    git config --get remote.origin.url | sed 's|^.*//||; s/.*@//; s/[^:/]\+[:/]//; s/.git$//'
+}
+parse_git_status() {
+    gitstatus=$( LC_ALL=C git status --untracked-files=normal --porcelain --branch )
+    num_staged=0
+    num_changed=0
+    num_conflicts=0
+    num_untracked=0
+    while IFS='' read -r line || [[ -n "${line}" ]]; do
+        status="${line:0:2}"
+        while [[ -n ${status} ]]; do
+            case "${status}" in
+            #two fixed character matches, loop finished
+            \#\#) branch_line="${line/\.\.\./^}"; break ;;
+            \?\?) ((num_untracked++)); break ;;
+            U?) ((num_conflicts++)); break;;
+            ?U) ((num_conflicts++)); break;;
+            DD) ((num_conflicts++)); break;;
+            AA) ((num_conflicts++)); break;;
+            #two character matches, first loop
+            ?M) ((num_changed++)) ;;
+            ?D) ((num_changed++)) ;;
+            ?\ ) ;;
+            #single character matches, second loop
+            U) ((num_conflicts++)) ;;
+            \ ) ;;
+            *) ((num_staged++)) ;;
+            esac
+            status="${status:0:(${#status}-1)}"
+        done
+    done <<< "${gitstatus}"
+    echo "stage: ${num_staged} change: ${num_changed} conflicts: ${num_conflicts} untracked: ${num_untracked}"
+}
 
 parse_tmux_session() {
     CUSTOMTTY=$(tty)
@@ -81,7 +115,8 @@ fi;
 
 GITBRANCH=$(parse_git_branch)
 if [[ "${GITBRANCH}" != "" ]]; then
-    ENVSTR="${ENVSTR}${WHITE}GIT(${LIGHT_GREEN}${GITBRANCH}${WHITE})"
+    GITSTATUS=$(parse_git_status)
+    ENVSTR="${ENVSTR}${WHITE}GIT(${LIGHT_GREEN}${GITBRANCH}${WHITE})${GITSTATUS}"
 fi;
 
 if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
