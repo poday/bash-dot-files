@@ -23,7 +23,7 @@ parse_git_branch() {
 parse_git_remote() {
     git config --get remote.origin.url | sed 's|^.*//||; s/.*@//; s/[^:/]\+[:/]//; s/.git$//'
 }
-parse_git_status() {
+parse_git_file_status() {
     gitstatus=$( LC_ALL=C git status --untracked-files=normal --porcelain --branch )
     num_staged=0
     num_changed=0
@@ -52,7 +52,40 @@ parse_git_status() {
             status="${status:0:(${#status}-1)}"
         done
     done <<< "${gitstatus}"
-    echo "stage: ${num_staged} change: ${num_changed} conflicts: ${num_conflicts} untracked: ${num_untracked}"
+    IFS="^" read -ra branch_fields <<< "${branch_line/\#\# }"
+    branch="${branch_fields[0]}"
+    IFS="[,]" read -ra remote_fields <<< "${branch_fields[1]}"
+    upstream="${remote_fields[0]}"
+    up_arrow=$'\xe2\x86\x91'
+    down_arrow=$'\xe2\x86\x93'
+    for remote_field in "${remote_fields[@]}"; do
+      if [[ "${remote_field}" == "ahead "* ]]; then
+        num_ahead="${remote_field:6}"
+        #\xe2\x86\x91
+        ahead="${up_arrow} ${num_ahead}"
+      fi
+      if [[ "${remote_field}" == "behind "* ]] || [[ "${remote_field}" == " behind "* ]]; then
+        num_behind="${remote_field:7}"
+        behind="${down_arrow} ${num_behind# }"
+      fi
+    done
+    remote="${behind-}${ahead-}"
+
+    if (( num_staged != 0)) ; then
+        git_stage_prompt="stage: ${num_staged} "
+    fi
+    if (( num_changed != 0)) ; then
+        git_num_changed="changed: ${num_changed} "
+    fi
+    if (( num_conflicts != 0)) ; then
+        git_num_conflicts="stage: ${num_conflicts} "
+    fi
+    if (( num_untracked != 0)) ; then
+        git_num_untracked="stage: ${num_untracked} "
+    fi
+
+
+    echo "${git_stage_prompt-}${git_num_changed-}${git_num_conflicts-}${git_num_untracked-} commits: ${remote}"
 }
 
 parse_tmux_session() {
@@ -115,7 +148,7 @@ fi;
 
 GITBRANCH=$(parse_git_branch)
 if [[ "${GITBRANCH}" != "" ]]; then
-    GITSTATUS=$(parse_git_status)
+    GITSTATUS=$(parse_git_file_status)
     ENVSTR="${ENVSTR}${WHITE}GIT(${LIGHT_GREEN}${GITBRANCH}${WHITE})${GITSTATUS}"
 fi;
 
