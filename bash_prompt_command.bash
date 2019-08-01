@@ -21,6 +21,11 @@ parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
 }
 
+parse_tmux_session() {
+    CUSTOMTTY=$(tty)
+    tmux list-panes -a -F '#{pane_tty} #{session_name}' -t "$s" 2>/dev/null | grep "$CUSTOMTTY" 2>/dev/null | awk '{print $2}'
+}
+
 
 if [ -z $SCHROOT_CHROOT_NAME ]; then
     SCHROOT_CHROOT_NAME=" "
@@ -59,6 +64,13 @@ ENVSTR=""
 #we delay the interpolation of SHLVL to ensure that it displays correctly
 if [[ ${SHLVL} != 2 ]]; then
     ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}\${SHLVL}${WHITE})"
+fi;
+
+if [[ "${TMUX}" != "" ]]; then
+    TMUX_SESSION=$(parse_tmux_session)
+    if [[ "${TMUX_SESSION}" != "" ]]; then
+        ENVSTR="${ENVSTR}${WHITE}TMUX(${LIGHT_GREEN}${TMUX_SESSION}${WHITE})"
+    fi;
 fi;
 
 GITBRANCH=$(parse_git_branch)
