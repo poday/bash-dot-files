@@ -26,6 +26,12 @@ parse_tmux_session() {
     tmux list-panes -a -F '#{pane_tty} #{session_name}' -t "$s" 2>/dev/null | grep "$CUSTOMTTY" 2>/dev/null | awk '{print $2}'
 }
 
+count_dir_pop_depth() {
+    echo $(( $(dirs -p | wc -l) -1))
+}
+next_dir_pop_directory() {
+    dirs +1
+}
 
 if [ -z $SCHROOT_CHROOT_NAME ]; then
     SCHROOT_CHROOT_NAME=" "
@@ -82,9 +88,15 @@ if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
     ENVSTR="${ENVSTR}${WHITE}(${ORANGE}PIPENV${WHITE})"
 fi;
 
+DIRPOPDEPTH=$(count_dir_pop_depth)
+if [[ "${DIRPOPDEPTH}" != "0" ]]; then
+    NEXTDIRPOP=$(next_dir_pop_directory)
+    ENVSTR="${ENVSTR}${WHITE}POPD(${ORANGE}${DIRPOPDEPTH}${WHITE}:${LIGHT_GREEN}${NEXTDIRPOP}${WHITE})"
+fi;
+
+
 if [[ "${ENVSTR}" != "" ]]; then
     ENVSTR="${ENVSTR}\n"
 fi;
-
 
 echo "\n${ENVSTR}${ERRMSG}${USERSTYLE}\u${WHITE}@${HOSTSTYLE}\h${WHITE}@${CYAN}\t${WHITE}@${YELLOW}\w\n${WHITE}\$ $RESTORE"
