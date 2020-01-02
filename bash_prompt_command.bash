@@ -133,10 +133,14 @@ fi;
 
 ENVSTR=""
 
-#small hack, normally the shell level is 1 at the prompt but we'll be 2 inside this script,
-#we delay the interpolation of SHLVL to ensure that it displays correctly
-if [[ ${SHLVL} != 2 ]]; then
-    ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}\${SHLVL}${WHITE})"
+#small hack, SHLVL is off by 1 in OSX so we handle it differently
+if [[ $(uname -s) == Darwin ]]; then
+    SHELL_LEVEL=$((${SHLVL} - 1))
+else
+    SHELL_LEVEL=${SHLVL}
+fi;
+if [[ ${SHELL_LEVEL} != 0 ]]; then
+    ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}${SHELL_LEVEL}${WHITE})"
 fi;
 
 if [[ "${TMUX}" != "" ]]; then
