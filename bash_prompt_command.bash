@@ -134,10 +134,11 @@ fi;
 ENVSTR=""
 
 #small hack, SHLVL is off by 1 in OSX so we handle it differently
+#ubuntu bash 4.4.20 seems to have shlvl off by 2
 if [[ $(uname -s) == Darwin ]]; then
     SHELL_LEVEL=$((${SHLVL} - 1))
 else
-    SHELL_LEVEL=${SHLVL}
+    SHELL_LEVEL=$((${SHLVL} - 2))
 fi;
 if [[ ${SHELL_LEVEL} != 0 ]]; then
     ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}${SHELL_LEVEL}${WHITE})"
