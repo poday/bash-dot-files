@@ -2,12 +2,11 @@
 
 #set -x
 
-# Add `~/bin` to the `$PATH`
-export PATH="$HOME/bin:$PATH";
+[[ -d "$HOME/bin:$PATH" ]] && export PATH="$HOME/bin:$PATH";
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+[[ -f /usr/local/etc/bash_completion ]] && . /usr/local/etc/bash_completion
 
 export GLICOLOR=1
 
@@ -34,4 +33,4 @@ fi;
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" $HOME/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
 
-export PATH="$HOME/.cargo/bin:$PATH"
+[[ -d "$HOME/.cargo/bin" ]] && export PATH="$HOME/.cargo/bin:$PATH"

@@ -136,7 +136,7 @@ ENVSTR=""
 #small hack, SHLVL is off by 1 in OSX so we handle it differently
 #ubuntu bash 4.4.20 seems to have shlvl off by 2
 if [[ $(uname -s) == Darwin ]]; then
-    SHELL_LEVEL=$((${SHLVL} - 1))
+    SHELL_LEVEL=$((${SHLVL} - 2))
 else
     SHELL_LEVEL=$((${SHLVL} - 2))
 fi;
