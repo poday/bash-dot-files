@@ -62,14 +62,14 @@ parse_git_file_status() {
       if [[ "${remote_field}" == "ahead "* ]]; then
         num_ahead="${remote_field:6}"
         #\xe2\x86\x91
-        ahead="${up_arrow}${num_ahead# }"
+        ahead="${up_arrow}${num_ahead# } "
       fi
       if [[ "${remote_field}" == "behind "* ]] || [[ "${remote_field}" == " behind "* ]]; then
         num_behind="${remote_field:7}"
-        behind="${down_arrow}${num_behind# }"
+        behind="${down_arrow}${num_behind# } "
       fi
     done
-    remote="${behind-}${ahead-} "
+    remote="${behind-}${ahead-}"
 
     if (( num_staged != 0)) ; then
         git_stage_prompt="stage: ${num_staged} "
