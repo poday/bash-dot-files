@@ -11,11 +11,20 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export GLICOLOR=1
 
 function prompt_command {
+    # capture the previous command's exit code before it is over writen
     RET=$?
+    #set the tab/window title. Current length is based around MS's "Windows Terminal"
+    if [[ ${#PWD} < 15 ]]; then
+        echo -en "\033]0;$(whoami)@$(hostname)@${PWD}\a"
+    else
+        echo -en "\033]0;$(whoami)@$(hostname)@...${PWD: -14}\a"
+    fi;
+
     export PS1=$($SCRIPTDIR/bash_prompt_command.bash $RET)
 }
 PROMPT_DIRTRIM=3
 export PROMPT_COMMAND=prompt_command
+
 
 # Get color support for 'less'
 export LESS="--RAW-CONTROL-CHARS"
