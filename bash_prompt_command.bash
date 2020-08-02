@@ -69,7 +69,6 @@ parse_git_file_status() {
         behind="${down_arrow}${num_behind# } "
       fi
     done
-    remote="${behind-}${ahead-}"
 
     if (( num_staged != 0)) ; then
         git_stage_prompt="stage: ${num_staged} "
@@ -81,11 +80,14 @@ parse_git_file_status() {
         git_num_conflicts="stage: ${num_conflicts} "
     fi
     if (( num_untracked != 0)) ; then
-        git_num_untracked="stage: ${num_untracked} "
+        git_num_untracked="untracked: ${num_untracked} "
+    fi
+    if (( behind != "" || ahead != "" )) ; then
+        remote="commits: ${behind-}${ahead-} "
     fi
 
 
-    echo "${git_stage_prompt-}${git_num_changed-}${git_num_conflicts-}${git_num_untracked-}commits: ${remote}"
+    echo "${git_stage_prompt-}${git_num_changed-}${git_num_conflicts-}${git_num_untracked-}${remote}"
 }
 
 parse_tmux_session() {
