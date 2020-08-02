@@ -82,10 +82,9 @@ parse_git_file_status() {
     if (( num_untracked != 0)) ; then
         git_num_untracked="untracked: ${num_untracked} "
     fi
-    if (( behind != "" || ahead != "" )) ; then
+    if (( num_behind != 0 || num_ahead != 0 )) ; then
         remote="commits: ${behind-}${ahead-} "
     fi
-
 
     echo "${git_stage_prompt-}${git_num_changed-}${git_num_conflicts-}${git_num_untracked-}${remote}"
 }
