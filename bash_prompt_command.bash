@@ -77,7 +77,7 @@ parse_git_file_status() {
         git_num_changed="changed: ${num_changed} "
     fi
     if (( num_conflicts != 0)) ; then
-        git_num_conflicts="stage: ${num_conflicts} "
+        git_num_conflicts="conflict: ${num_conflicts} "
     fi
     if (( num_untracked != 0)) ; then
         git_num_untracked="untracked: ${num_untracked} "
