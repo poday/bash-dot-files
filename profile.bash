@@ -77,4 +77,15 @@ if is_bin_in_path helm; then
     source <(helm completion bash)
 fi;
 
-#source_existing_file "$HOME/.bash_local_profile"
+source_existing_file "$HOME/.bash_local_profile"
+
+# init the ssh-agent
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
+   if [ "$RUNNING_AGENT" = "0" ]; then
+        # Launch a new instance of the agent
+        ssh-agent -s &> $HOME/.ssh/ssh-agent
+   fi;
+   eval `cat $HOME/.ssh/ssh-agent` > /dev/null 2>&1;
+fi;
