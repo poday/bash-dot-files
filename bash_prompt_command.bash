@@ -108,10 +108,12 @@ fi;
 # set the color of $? to red when $? != 0
 ERRMSG=""
 RET=$1
+SHELL_LEVEL=$(($2 - 1))
+
 if [[ $RET != 0 ]]; then
     ERRMSG="${RED}(${RET})"
 else
-    ERRMSG="${YELLOW}(${RET})"
+    ERRMSG="${GREEN}(${RET})"
 fi;
 
 #set the user color to red when root
@@ -134,13 +136,6 @@ fi;
 
 ENVSTR=""
 
-#small hack, SHLVL is off by 1 in OSX so we handle it differently
-#ubuntu bash 4.4.20 seems to have shlvl off by 2
-if [[ $(uname -s) == Darwin ]]; then
-    SHELL_LEVEL=$((${SHLVL} - 2))
-else
-    SHELL_LEVEL=$((${SHLVL} - 2))
-fi;
 if [[ ${SHELL_LEVEL} != 0 ]]; then
     ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}${SHELL_LEVEL}${WHITE})"
 fi;

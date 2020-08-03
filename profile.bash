@@ -33,7 +33,7 @@ function prompt_command {
         echo -en "\033]0;$(whoami)@$(hostname)@...${PWD: -14}\a"
     fi;
 
-    export PS1=$($SCRIPTDIR/bash_prompt_command.bash $RET)
+    export PS1=$($SCRIPTDIR/bash_prompt_command.bash $RET $SHLVL)
 }
 
 add_dir_to_path "$HOME/bin"
