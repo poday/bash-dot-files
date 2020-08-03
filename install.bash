@@ -8,4 +8,4 @@ function set_script_dir {
 }
 
 set_script_dir
-ln -s $SCRIPTDIR $HOME/.bash_profile
+ln -s $SCRIPTDIR/profile.bash $HOME/.bash_profile
