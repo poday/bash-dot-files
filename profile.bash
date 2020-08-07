@@ -77,6 +77,10 @@ if is_bin_in_path helm; then
     source <(helm completion bash)
 fi;
 
+if is_bin_in_path pipenv; then
+    source <(pipenv --completion)
+fi;
+
 source_existing_file "$HOME/.bash_local_profile"
 
 # init the ssh-agent
