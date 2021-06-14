@@ -12,5 +12,6 @@ function source_real_file {
 
 set_script_dir
 
-source_existing_file "$HOME/.bashrc"
-source_real_file "$SCRIPTDIR/rc.bash"
+source_real_file "$HOME/.bashrc"
+source_existing_file "$SCRIPTDIR/rc.bash"
+source_existing_file "$HOME/.bash_local_profile"

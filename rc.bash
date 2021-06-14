@@ -36,11 +36,11 @@ function prompt_command {
     export PS1=$($SCRIPTDIR/bash_prompt_command.bash $RET $SHLVL)
 }
 
+source_existing_file "$HOME/.bash_local_rc"
+
 add_dir_to_path "$HOME/bin"
 add_dir_to_path "$HOME/.cargo/bin"
 add_dir_to_path "$HOME/.local/bin"
-
-source_existing_file "$HOME/.bashrc"
 
 set_script_dir
 
@@ -79,8 +79,6 @@ fi;
 if is_bin_in_path pipenv; then
     source <(pipenv --completion)
 fi;
-
-source_existing_file "$HOME/.bash_local_profile"
 
 # init the ssh-agent
 if [ -z "$SSH_AUTH_SOCK" ]; then
