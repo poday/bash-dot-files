@@ -11,5 +11,5 @@ function move_file_to_local {
 }
 
 set_script_dir
-move_file_to_local($HOME/.bashrc)
+move_file_to_local $HOME/.bashrc
 ln -s $SCRIPTDIR/rc.bash $HOME/.bashrc
