@@ -68,6 +68,15 @@ fi;
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" $HOME/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
 
+# aws auto complete
+if is_bin_in_path aws_completer; then
+    complete -C "$(command -v aws_completer)" aws
+fi;
+
+if is_bin_in_path eksctl; then
+    source <(eksctl completion bash)
+fi;
+
 if is_bin_in_path kubectl; then
     source <(kubectl completion bash)
 fi;
