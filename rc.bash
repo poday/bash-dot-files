@@ -44,8 +44,6 @@ add_dir_to_path "$HOME/.local/bin"
 
 set_script_dir
 
-source_existing_file "/usr/local/etc/bash_completion"
-
 export GLICOLOR=1
 
 #bash env var to shorten displayed path prompt
@@ -60,7 +58,10 @@ source_existing_file "$SCRIPTDIR/aliases.bash"
 # Use colors for less, man, etc.
 source_existing_file "$SCRIPTDIR/less-termcap.bash"
 
-# bash completion for git
+# bash completion
+source_existing_file "/usr/local/etc/bash_completion"
+
+# bash completion for MacOS git
 if is_bin_in_path brew; then
     [[ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ]] && source $(brew --prefix)/etc/bash_completion.d/git-completion.bash
 fi;
@@ -68,8 +69,12 @@ fi;
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" $HOME/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
 
+# if there is a global bash completion, use that. Otherwise select a few
 if [[ -f /usr/share/bash-completion/bash_completion ]]; then
     source /usr/share/bash-completion/bash_completion
+else
+    source_existing_file "/usr/share/bash-completion/bash_completion/apt"
+    source_existing_file "/usr/share/bash-completion/bash_completion/git"
 fi
 
 # aws auto complete
