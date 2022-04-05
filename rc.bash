@@ -73,8 +73,8 @@ fi;
 if [[ -f /usr/share/bash-completion/bash_completion ]]; then
     source /usr/share/bash-completion/bash_completion
 else
-    source_existing_file "/usr/share/bash-completion/bash_completion/apt"
-    source_existing_file "/usr/share/bash-completion/bash_completion/git"
+    source_existing_file "/usr/share/bash-completion/completions/apt"
+    source_existing_file "/usr/share/bash-completion/completions/git"
 fi
 
 # aws auto complete
