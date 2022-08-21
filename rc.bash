@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 
 #set -x
+#set -euo pipefail
 
 function is_bin_in_path {
-    if [[ -n $ZSH_VERSION ]]; then
-        builtin whence -p "$1" &> /dev/null
-    else  # bash:
-        builtin type -P "$1" &> /dev/null
-    fi
+    builtin type -P "$1" &> /dev/null
 }
 
 function add_dir_to_path {
-    [[ -d "$1" ]] && export PATH="$1:$PATH";
+    if [[ -d "$1" ]]; then
+        export PATH="$1:$PATH";
+    fi
 }
 
 function source_existing_file {
-    [[ -f $1 ]] && source $1
+    if [[ -f "$1" ]]; then
+        source $1
+    fi
 }
 
 function set_script_dir {
@@ -46,9 +47,14 @@ set_script_dir
 
 export GLICOLOR=1
 
-#bash env var to shorten displayed path prompt
-PROMPT_DIRTRIM=3
-export PROMPT_COMMAND=prompt_command
+# if we're in vscode's terminal integration use their prompt instead
+if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+    #bash env var to shorten displayed path prompt
+    PROMPT_DIRTRIM=3
+    export PROMPT_COMMAND=prompt_command
+fi
+
+
 
 # Get color support for 'less'
 export LESS="--RAW-CONTROL-CHARS"
@@ -63,7 +69,9 @@ source_existing_file "/usr/local/etc/bash_completion"
 
 # bash completion for MacOS git
 if is_bin_in_path brew; then
-    [[ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ]] && source $(brew --prefix)/etc/bash_completion.d/git-completion.bash
+    if [[ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ]]; then
+        source $(brew --prefix)/etc/bash_completion.d/git-completion.bash
+    fi;
 fi;
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
