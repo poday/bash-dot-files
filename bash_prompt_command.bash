@@ -17,6 +17,9 @@ YELLOW="\[\033[33m\]"
 
 RESTORE="\[\033[0m\]" #0m restores to the terminal's default colour
 
+#set -x
+#set -euo pipefail
+
 parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
 }
@@ -29,6 +32,9 @@ parse_git_file_status() {
     num_changed=0
     num_conflicts=0
     num_untracked=0
+    num_ahead=0
+    num_behind=0
+    remote=""
     while IFS='' read -r line || [[ -n "${line}" ]]; do
         status="${line:0:2}"
         while [[ -n ${status} ]]; do
@@ -54,8 +60,8 @@ parse_git_file_status() {
     done <<< "${gitstatus}"
     IFS="^" read -ra branch_fields <<< "${branch_line/\#\# }"
     branch="${branch_fields[0]}"
-    IFS="[,]" read -ra remote_fields <<< "${branch_fields[1]}"
-    upstream="${remote_fields[0]}"
+    IFS="[,]" read -ra remote_fields <<< "${branch_fields[1]-}"
+    upstream="${remote_fields[0]-}"
     up_arrow=$'\xe2\x86\x91'
     down_arrow=$'\xe2\x86\x93'
     for remote_field in "${remote_fields[@]}"; do
@@ -101,20 +107,26 @@ next_dir_pop_directory() {
     dirs +1
 }
 
-if [ -z $SCHROOT_CHROOT_NAME ]; then
+if [ ! -z "${SCHROOT_CHROOT_NAME-}" ]; then
     SCHROOT_CHROOT_NAME=" "
 fi;
 
-# set the color of $? to red when $? != 0
-ERRMSG=""
-RET=$1
-SHELL_LEVEL=$(($2 - 1))
+# if we're not in vscode then set the exit code
+# if we're in vscode rely upon the terminal integration
+# as the passed in return code is always 1 instead of $?
+if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+    # set the color of $? to red when $? != 0
+    ERRMSG=""
+    RET=$1
 
-if [[ $RET != 0 ]]; then
-    ERRMSG="${RED}(${RET})"
-else
-    ERRMSG="${GREEN}(${RET})"
+    if [[ $RET != 0 ]]; then
+        ERRMSG="${RED}(${RET})"
+    else
+        ERRMSG="${GREEN}(${RET})"
+    fi;
 fi;
+
+SHELL_LEVEL=$(($2 - 1))
 
 #set the user color to red when root
 if [[ "${USER}" == "root" ]]; then
@@ -124,7 +136,7 @@ else
 fi;
 
 # Highlight the hostname when connected via SSH.
-if [[ "${SSH_TTY}" ]]; then
+if [ -z "${SSH_TTY-}" ]; then
 	HOSTSTYLE="${YELLOW}";
 else
 	HOSTSTYLE="${GREEN}";
@@ -140,7 +152,7 @@ if [[ ${SHELL_LEVEL} != 0 ]]; then
     ENVSTR="${ENVSTR}${WHITE}NEST(${ORANGE}${SHELL_LEVEL}${WHITE})"
 fi;
 
-if [[ "${TMUX}" != "" ]]; then
+if [ ! -z "${TMUX:-}" ]; then
     TMUX_SESSION=$(parse_tmux_session)
     if [[ "${TMUX_SESSION}" != "" ]]; then
         ENVSTR="${ENVSTR}${WHITE}TMUX(${LIGHT_GREEN}${TMUX_SESSION}${WHITE})"
@@ -153,7 +165,7 @@ if [[ "${GITBRANCH}" != "" ]]; then
     ENVSTR="${ENVSTR}${WHITE}GIT(${LIGHT_GREEN}${GITBRANCH}${WHITE})${GITSTATUS}"
 fi;
 
-if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
+if [[ "${PIPENV_ACTIVE:-}" == "1" ]]; then
     ENVSTR="${ENVSTR}${WHITE}(${ORANGE}PIPENV${WHITE})"
 fi;
 

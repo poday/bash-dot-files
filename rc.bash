@@ -26,7 +26,7 @@ function set_script_dir {
 
 function prompt_command {
     # capture the previous command's exit code before it is over writen
-    RET=$?
+    CUSTOM_RET=$?
     #set the tab/window title. Current length is based around MS's "Windows Terminal"
     if [[ ${#PWD} < 15 ]]; then
         echo -en "\033]0;$(whoami)@$(hostname)@${PWD}\a"
@@ -34,7 +34,7 @@ function prompt_command {
         echo -en "\033]0;$(whoami)@$(hostname)@...${PWD: -14}\a"
     fi;
 
-    export PS1=$($SCRIPTDIR/bash_prompt_command.bash $RET $SHLVL)
+    export PS1=$($SCRIPTDIR/bash_prompt_command.bash $CUSTOM_RET $SHLVL)
 }
 
 source_existing_file "$HOME/.bash_local_rc"
@@ -48,11 +48,11 @@ set_script_dir
 export GLICOLOR=1
 
 # if we're in vscode's terminal integration use their prompt instead
-if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+#if [[ "$TERM_PROGRAM" != "vscode" ]]; then
     #bash env var to shorten displayed path prompt
     PROMPT_DIRTRIM=3
     export PROMPT_COMMAND=prompt_command
-fi
+#fi
 
 
 
