@@ -103,7 +103,7 @@ if is_bin_in_path helm; then
 fi;
 
 if is_bin_in_path pipenv; then
-    source <(pipenv --completion)
+    eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
 fi;
 
 # init the ssh-agent
