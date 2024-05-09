@@ -9,10 +9,18 @@ function set_script_dir {
 }
 
 function source_existing_file {
-    [[ -f "${1}" ]] && source "${1}"
+    if [[ -f "$1" ]]; then
+        #set +euo pipefail
+        source $1
+        #set -euo pipefail
+    fi
 }
 function source_real_file {
-    [[ -f "${1}" ]] && [[ ! -L "${1}" ]] && source "${1}"
+    if [[ -f "${1}" ]] && [[ ! -L "${1}" ]]; then
+        #set +euo pipefail
+        source "${1}"
+        #set -euo pipefail
+    fi
 }
 
 set_script_dir
@@ -20,3 +28,5 @@ set_script_dir
 source_real_file "$HOME/.bashrc"
 source_existing_file "$SCRIPTDIR/rc.bash"
 source_existing_file "$HOME/.bash_local_profile"
+
+#set +euo pipefail

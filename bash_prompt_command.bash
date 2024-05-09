@@ -181,3 +181,5 @@ if [[ "${ENVSTR}" != "" ]]; then
 fi;
 
 echo "\n${ENVSTR}${ERRMSG}${USERSTYLE}\u${WHITE}@${HOSTSTYLE}\h${WHITE}@${CYAN}\t${WHITE}@${YELLOW}\w\n${WHITE}\$ $RESTORE"
+
+#set +euo pipefail

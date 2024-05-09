@@ -15,8 +15,18 @@ function add_dir_to_path {
 
 function source_existing_file {
     if [[ -f "$1" ]]; then
+        #set +euo pipefail
         source $1
+        #set -euo pipefail
     fi
+}
+
+function base_completion_handle {
+    if is_bin_in_path $1; then
+        #set +euo pipefail
+        source <($1 completion bash)
+        #set -euo pipefail
+    fi;
 }
 
 function set_script_dir {
@@ -48,11 +58,11 @@ set_script_dir
 export GLICOLOR=1
 
 # if we're in vscode's terminal integration use their prompt instead
-#if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+if [[ "${TERM_PROGRAM:-}" != "vscode" ]]; then
     #bash env var to shorten displayed path prompt
     PROMPT_DIRTRIM=3
     export PROMPT_COMMAND=prompt_command
-#fi
+fi
 
 
 
@@ -70,7 +80,9 @@ source_existing_file "/usr/local/etc/bash_completion"
 # bash completion for MacOS git
 if is_bin_in_path brew; then
     if [[ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ]]; then
+        #set +euo pipefail
         source $(brew --prefix)/etc/bash_completion.d/git-completion.bash
+        #set -euo pipefail
     fi;
 fi;
 
@@ -79,7 +91,9 @@ fi;
 
 # if there is a global bash completion, use that. Otherwise select a few
 if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    #set +euo pipefail
     source /usr/share/bash-completion/bash_completion
+    #set -euo pipefail
 else
     source_existing_file "/usr/share/bash-completion/completions/apt"
     source_existing_file "/usr/share/bash-completion/completions/git"
@@ -90,20 +104,14 @@ if is_bin_in_path aws_completer; then
     complete -C "$(command -v aws_completer)" aws
 fi;
 
-if is_bin_in_path eksctl; then
-    source <(eksctl completion bash)
-fi;
-
-if is_bin_in_path kubectl; then
-    source <(kubectl completion bash)
-fi;
-
-if is_bin_in_path helm; then
-    source <(helm completion bash)
-fi;
+base_completion_handle eksctl
+base_completion_handle kubectl
+base_completion_handle helm
 
 if is_bin_in_path pipenv; then
+    #set +euo pipefail
     eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
+    #set -euo pipefail
 fi;
 
 # init the ssh-agent
@@ -116,3 +124,6 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
    fi;
    eval `cat $HOME/.ssh/ssh-agent` > /dev/null 2>&1;
 fi;
+
+# disbale the settings as other bash scripts may not have the same bar
+#set +euo pipefail
