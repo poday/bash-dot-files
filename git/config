@@ -14,7 +14,7 @@
 	pager = less --no-init --quit-if-one-screen
 
 [user]
-	name = Patrick ODay
+	name = Patrick O'Day
 	email = pcoday@gmail.com
 [rerere]
 	enabled = true
