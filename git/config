@@ -12,3 +12,11 @@
 	editor = code --wait
 	autocrlf = false
 	pager = less --no-init --quit-if-one-screen
+
+[user]
+	name = Patrick ODay
+	email = pcoday@gmail.com
+[rerere]
+	enabled = true
+[fetch]
+	writeCommitGraph = true

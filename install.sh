@@ -10,13 +10,21 @@ function set_script_dir {
 
 function move_file_to_local {
     local bashrc="$HOME/.bashrc"
-    if [[ -f "${bashrc}" ]] && [[ ! -L "${bashrc}" ]]; then
-        mv "${bashrc}" $HOME/.bash_local_rc
-        ln -s $SCRIPTDIR/rc.bash $bashrc
+    local localbashrc="$HOME/.bash_local_rc"
+    if [[ -f "${bashrc}" && ! -L "${bashrc}" && ! -f "${localbashrc}" ]]; then
+        mv "${bashrc}" "${localbashrc}"
+        ln -s "${SCRIPTDIR}/rc.bash" "${bashrc}"
     fi
+}
+
+function copy_config_files {
+    local config_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    mkdir -p "${config_dir}/git"
+    cp -R "${SCRIPTDIR}/git" "${config_dir}"
 }
 
 set_script_dir
 move_file_to_local
+copy_config_files
 
 set +euo pipefail

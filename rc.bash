@@ -16,7 +16,7 @@ function add_dir_to_path {
 function source_existing_file {
     if [[ -f "$1" ]]; then
         #set +euo pipefail
-        source $1
+        source "$1"
         #set -euo pipefail
     fi
 }
@@ -57,8 +57,8 @@ set_script_dir
 
 export GLICOLOR=1
 
-# if we're in vscode's terminal integration use their prompt instead
-if [[ "${TERM_PROGRAM:-}" != "vscode" ]]; then
+# only use custom prompt when opted in
+if [[ "${USE_CUSTOM_PROMPT}" != "" ]]; then
     #bash env var to shorten displayed path prompt
     PROMPT_DIRTRIM=3
     export PROMPT_COMMAND=prompt_command
